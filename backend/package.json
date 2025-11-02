@@ -2,11 +2,11 @@
   "name": "express-socket-server",
   "version": "1.0.0",
   "description": "Simple Express and Socket.IO server with CORS enabled",
-  "main": "index.js",
+  "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "express": "^4.19.2",
@@ -19,3 +19,4 @@
   },
   "license": "MIT"
 }
+
