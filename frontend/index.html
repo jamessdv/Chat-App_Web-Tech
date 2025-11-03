@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChatSphere</title>
+  <title>Delta-Comms: Anonymous Chatting</title>
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <style>
     * {
@@ -18,7 +18,6 @@
       color: #1f2937;
     }
 
-    /* Lobby Styles */
     .lobby-container {
       display: flex;
       flex-direction: column;
@@ -26,7 +25,8 @@
       justify-content: center;
       min-height: 100vh;
       padding: 1rem;
-      background-color: white;
+      background: linear-gradient(135deg,rgb(147, 87, 87), rgb(83, 187, 218), rgb(238, 117, 238), rgb(108, 108, 237),rgb(223, 104, 158),#4da595, rgb(58, 29, 82));
+      
     }
 
     .lobby-header {
@@ -42,7 +42,7 @@
     }
 
     .lobby-subtitle {
-      color: #6b7280;
+      color: #ffffff;
       font-size: 1.125rem;
     }
 
@@ -182,7 +182,6 @@
       background-color: #1f2937;
     }
 
-    /* Chat Room Styles */
     .chat-container {
       display: flex;
       height: 100vh;
@@ -391,7 +390,7 @@
       cursor: not-allowed;
     }
 
-    /* User List */
+    /* user list */
     .user-list {
       padding: 1rem;
     }
@@ -431,7 +430,7 @@
       color: #1f2937;
     }
 
-    /* Mobile User List Overlay */
+    /*user list overlay in mobile*/
     .mobile-overlay {
       display: none;
       position: fixed;
@@ -490,7 +489,6 @@
       display: none;
     }
 
-    /* Icons using SVG */
     .icon {
       width: 1.5rem;
       height: 1.5rem;
@@ -508,10 +506,10 @@
   </style>
 </head>
 <body>
-  <!-- Lobby Screen -->
+  <!-- lobby dashboard-->
   <div id="lobby" class="lobby-container">
     <div class="lobby-header">
-      <h1 class="lobby-title">ChatSphere</h1>
+      <h1 class="lobby-title">Delta-Comms</h1>
       <p class="lobby-subtitle">Connect with others in secure, private rooms.</p>
     </div>
 
@@ -535,9 +533,9 @@
     </div>
   </div>
 
-  <!-- Chat Room Screen -->
+  <!--chat room-->
   <div id="chatRoom" class="chat-container hidden">
-    <!-- User List Sidebar (Desktop) -->
+    <!--user list sidebar (desktop) -->
     <div class="user-list-sidebar">
       <div class="user-list">
         <h2 class="user-list-title">Users (<span id="userCount">0</span>)</h2>
@@ -545,9 +543,8 @@
       </div>
     </div>
 
-    <!-- Main Chat Area -->
+    <!--main chat area-->
     <div class="chat-main">
-      <!-- Header -->
       <header class="chat-header">
         <div class="header-info">
           <h1>Room: <span id="roomTitle"></span></h1>
@@ -568,10 +565,10 @@
         </div>
       </header>
 
-      <!-- Messages -->
+      <!--messages-->
       <main class="chat-messages" id="messageList"></main>
 
-      <!-- Input -->
+      <!--input-->
       <div class="chat-input-container">
         <div class="input-wrapper">
           <input type="file" id="fileInput" class="hidden" onchange="handleFileSelect(event)">
@@ -586,7 +583,7 @@
       </div>
     </div>
 
-    <!-- Mobile User List Overlay -->
+    <!--user list overlay (mobile)-->
     <div id="mobileOverlay" class="mobile-overlay" onclick="toggleMobileUserList()"></div>
     <div id="mobileSidebar" class="mobile-sidebar">
       <div class="mobile-sidebar-header">
@@ -602,37 +599,36 @@
   </div>
 
   <script>
-    // Socket.IO connection
-    const socket = io("https://chat-app-web-tech.onrender.com");
+    //socket.IO connection
+    const socket = io("https://chatcript.onrender.com"); //backend server URL
 
-    // State
     let currentUsername = "";
     let currentRoomName = "";
     let currentFormType = null;
     let inRoom = false;
 
-    // DOM Elements
+    //DOM elements
     const lobby = document.getElementById("lobby");
-    const lobbyButtons = document.getElementById("lobbyButtons");
-    const lobbyForm = document.getElementById("lobbyForm");
+    const lobbyButtons =document.getElementById("lobbyButtons");
+    const lobbyForm= document.getElementById("lobbyForm");
     const chatRoom = document.getElementById("chatRoom");
-    const formTitle = document.getElementById("formTitle");
-    const usernameInput = document.getElementById("username");
-    const roomNameInput = document.getElementById("roomName");
-    const passwordInput = document.getElementById("password");
-    const errorMessage = document.getElementById("errorMessage");
-    const messageList = document.getElementById("messageList");
+    const formTitle=document.getElementById("formTitle");
+    const usernameInput =document.getElementById("username");
+    const roomNameInput= document.getElementById("roomName");
+    const passwordInput= document.getElementById("password");
+    const errorMessage= document.getElementById("errorMessage");
+    const messageList= document.getElementById("messageList");
     const messageInput = document.getElementById("messageInput");
-    const userListDesktop = document.getElementById("userListDesktop");
-    const userListMobile = document.getElementById("userListMobile");
-    const userCount = document.getElementById("userCount");
+    const userListDesktop =document.getElementById("userListDesktop");
+    const userListMobile =document.getElementById("userListMobile");
+    const userCount= document.getElementById("userCount");
     const userCountMobile = document.getElementById("userCountMobile");
     const roomTitle = document.getElementById("roomTitle");
-    const usernameDisplay = document.getElementById("usernameDisplay");
+    const usernameDisplay= document.getElementById("usernameDisplay");
     const mobileOverlay = document.getElementById("mobileOverlay");
-    const mobileSidebar = document.getElementById("mobileSidebar");
+    const mobileSidebar= document.getElementById("mobileSidebar");
 
-    // Socket Event Listeners
+    //socket Event Listeners
     socket.on("room_success", () => {
       inRoom = true;
       errorMessage.classList.add("hidden");
@@ -658,7 +654,7 @@
     socket.on("receive_file", (metadata, file) => {
       const { username: sender, fileName } = metadata;
       
-      // Create downloadable blob
+      //create downloadable blob
       const blob = new Blob([file]);
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -669,7 +665,7 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      // Add system message
+      //system message
       addMessage({
         username: "System",
         message: `${sender} sent a file: ${fileName}`,
@@ -677,7 +673,7 @@
       });
     });
 
-    // Form Functions
+    //form functions
     function showForm(type) {
       currentFormType = type;
       lobbyButtons.classList.add("hidden");
@@ -726,12 +722,12 @@
       }
     }
 
-    // Add event listeners for all inputs
+    //event listeners for all inputs
     usernameInput.addEventListener("keypress", handleKeyPress);
     roomNameInput.addEventListener("keypress", handleKeyPress);
     passwordInput.addEventListener("keypress", handleKeyPress);
 
-    // Chat Functions
+    //chat functions
     function sendMessage() {
       const message = messageInput.value.trim();
       if (message && inRoom) {
@@ -811,5 +807,4 @@
     }
   </script>
 </body>
-
-</html>
+</html> 
